@@ -1,0 +1,22 @@
+{
+  "name": "chatdm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edwardeckelberry/chatdm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edwardeckelberry/chatdm/issues"
+  },
+  "homepage": "https://github.com/edwardeckelberry/chatdm#readme",
+  "description": "",
+  "dependencies": {
+    "ws": "^8.18.2"
+  }
+}
