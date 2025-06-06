@@ -1,14 +1,23 @@
-const ws = require('ws');
-//create a websocket server in port 3000
-const server = new ws.Server({ port: 3000 });
+import { create } from "domain"
+import { createServer } from "http"
+import { Server } from "socket.io"
+//create a socket.io server in port 3000
+const httpServer = createServer()
+const io = new Server(httpServer, {
+    cors: {
+        //allow all origins in development, but only the origin of the app in production
+        // to have all origins, set origin: "*"
+        origin: process.env.NODE_ENV === "production" ? false : ["http://localhost:5500"]
+    }
+})
 
 //once there is a connection, listen for a message
-server.on('connection', socket => {
+io.on('connection', socket => {
+    console.log('User: ${socket.id} connected') 
     socket.on('message', message => {
-        //fun fact: if you want to see message in binary,
-        //remove b and do console.log(message)
-        const b = Buffer.from(message)
-        console.log(b.toString())
-        socket.send(`${message}`)
+        console.log(data)
+        io.emit('message', '${socket.id.substring(0,5): ${data}')
     })
 })
+
+httpServer.listen(3500, () => console.log('listening on port 3500'))
