@@ -13,7 +13,7 @@ const io = new Server(httpServer, {
 
 //once there is a connection, listen for a message
 io.on('connection', socket => {
-    console.log('User: ${socket.id} connected') 
+    console.log('User ' + socket.id + ' connected') 
     socket.on('message', message => {
         console.log(data)
         io.emit('message', '${socket.id.substring(0,5): ${data}')
