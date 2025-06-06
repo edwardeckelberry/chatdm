@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://localhost:3000');
+const socket = io('ws://localhost:3000');
 
 //e = event
 function sendMessage(e){
@@ -18,7 +18,7 @@ function sendMessage(e){
 document.querySelector('form').addEventListener('submit', sendMessage)
 
 //listen for messages from the server
-socket.addEventListener('message', ({data}) => {
+socket.on("message", (data) => {
     //create a new list item
     const li = document.createElement('li')
     //retrive the message from the server
