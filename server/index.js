@@ -1,9 +1,18 @@
 import express from 'express'
 import { Server } from "socket.io"
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+//to get the current directory and file name of the module
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const PORT = process.env.PORT || 3500
 
 const app = express()
+
+
+app.use(express.static(path.join(__dirname, "public")))
 
 //we can pass in the server with express instead of http
 const expressServer = app.listen(PORT, () => {
