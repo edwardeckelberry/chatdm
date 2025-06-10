@@ -26,7 +26,14 @@ msgInput.addEventListener('keypress', () => {
     socket.emit('activity', socket.id.substring(0, 5))
 })
 
+let activityTimer
 socket.on('activity', (name) => {
     //uses hyphen on tilde key, not apostrophe
     activity.textContent = `${name} is typing...`
+
+    //clears after 3 seconds of inactivity
+    clearTimeout(activityTimer)
+    activityTimer = setTimeout(() => {
+        activity.textContent = ""
+    }, 3000)
 })
