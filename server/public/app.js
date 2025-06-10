@@ -27,5 +27,6 @@ msgInput.addEventListener('keypress', () => {
 })
 
 socket.on('activity', (name) => {
+    //uses hyphen on tilde key, not apostrophe
     activity.textContent = `${name} is typing...`
 })
