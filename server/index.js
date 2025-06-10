@@ -3,6 +3,8 @@ import { Server } from "socket.io"
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+/*<button onclick="document.body.style.backgroundColor='#d87093'">pink</button>
+    <button onclick="document.body.style.backgroundColor='#000000'">black</button> */
 //to get the current directory and file name of the module
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

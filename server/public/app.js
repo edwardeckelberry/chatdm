@@ -19,3 +19,8 @@ socket.on("message", (data) => {
     li.textContent = data
     document.querySelector('ul').appendChild(li)
 })
+
+const name = document.querySelector(".name")
+function changeColor(color) {
+    name.style.color = "palevioletred"
+}
