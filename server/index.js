@@ -32,6 +32,13 @@ const io = new Server(expressServer, {
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
+    //upon connection, send connect user message
+    socket.emit('message', `Welcome ${socket.id.substring(0, 5)}`)
+
+    //upon connection, send to all other users
+    socket.broadcast.emit('message', 'User ' + `${socket.id.substring(0, 5)}` + ' joined')
+
+    //listen for a message event
     socket.on('message', data => {
         console.log(data)
         io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
