@@ -1,7 +1,9 @@
 const socket = io('ws://localhost:3500')
 
 const activity = document.querySelector('.activity')
-const msgInput = document.querySelector('input')
+const msgInput = document.querySelector('#message')
+const nameInput = document.querySelector('#name')
+const chatRoom = document.querySelector('#room')
 function sendMessage(e) {
     e.preventDefault()
     if (msgInput.value) {
