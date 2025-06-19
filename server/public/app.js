@@ -12,8 +12,8 @@ function sendMessage(e) {
     e.preventDefault()
     if (chatRoom.value && nameInput.value && msgInput.value) {
         socket.emit('message', {
-            "name": nameInput.value,
-            "text": msgInput.value
+            name: nameInput.value,
+            text: msgInput.value
         })
         msgInput.value = ""
     }
