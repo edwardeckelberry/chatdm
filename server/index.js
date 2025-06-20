@@ -41,10 +41,35 @@ io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
     //upon connection, send connect user message
-    socket.emit('message', `Welcome ${socket.id.substring(0, 5)}`)
+    socket.emit('message', buildMsg(ADMIN, `Welcome to the chat app!`))
 
+    socket.on('enterRoom', ({ name, room }) => {
+    //leave prev room
+        const prevRoom = getUser(socket.id)?.room
+        if (prevRoom) {
+            socket.leave(prevRoom)
+            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`))
+        }
+
+        const user = activateUser(socket.id, name, room)
+
+        //cant update prev room until after the state update
+        // in activate user
+        if (prevRoom) {
+            io.to(prevRoom).emit('userList', {users: getUsersInRoom(prevRoom)})
+        }
+
+        //join new room
+        socket.join(user.room)
+
+        //to user who joined
+        socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} room`))
+
+        //to everyone else in the room
+        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`))
+    })
     //upon connection, send to all other users
-    socket.broadcast.emit('message', 'User ' + `${socket.id.substring(0, 5)}` + ' joined')
+    socket.broadcast.emit('message', 'User has joined')
 
     //listen for a message event
     socket.on('message', data => {
