@@ -3,9 +3,6 @@ import { Server } from "socket.io"
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-/*<button onclick="document.body.style.backgroundColor='#d87093'">pink</button>
-    <button onclick="document.body.style.backgroundColor='#000000'">black</button> */
-//to get the current directory and file name of the module
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -14,15 +11,14 @@ const ADMIN = "Admin"
 
 const app = express()
 
-
 app.use(express.static(path.join(__dirname, "public")))
 
-//we can pass in the server with express instead of http
 const expressServer = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
+    console.log(`listening on port ${PORT}`)
 })
 
-const usersState = {
+// state 
+const UsersState = {
     users: [],
     setUsers: function (newUsersArray) {
         this.users = newUsersArray
@@ -30,8 +26,6 @@ const usersState = {
 }
 
 const io = new Server(expressServer, {
-    //cross-origin resource sharing, will be different if sharing
-    //the frontend app with a different domain, not just local
     cors: {
         origin: process.env.NODE_ENV === "production" ? false : ["http://localhost:5500", "http://127.0.0.1:5500"]
     }
@@ -40,12 +34,14 @@ const io = new Server(expressServer, {
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
-    //upon connection, send connect user message
-    socket.emit('message', buildMsg(ADMIN, `Welcome to the chat app!`))
+    // Upon connection - only to user 
+    socket.emit('message', buildMsg(ADMIN, "Welcome to Chat App!"))
 
     socket.on('enterRoom', ({ name, room }) => {
-    //leave prev room
+
+        // leave previous room 
         const prevRoom = getUser(socket.id)?.room
+
         if (prevRoom) {
             socket.leave(prevRoom)
             io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`))
@@ -53,60 +49,66 @@ io.on('connection', socket => {
 
         const user = activateUser(socket.id, name, room)
 
-        //cant update prev room until after the state update
-        // in activate user
+        // Cannot update previous room users list until after the state update in activate user 
         if (prevRoom) {
-            io.to(prevRoom).emit('userList', {users: getUsersInRoom(prevRoom)})
+            io.to(prevRoom).emit('userList', {
+                users: getUsersInRoom(prevRoom)
+            })
         }
 
-        //join new room
+        // join room 
         socket.join(user.room)
 
-        //to user who joined
-        socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} room`))
+        // To user who joined 
+        socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} chat room`))
 
-        //to everyone else in the room
+        // To everyone else 
         socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`))
 
-        //update user list in room
-        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) })
+        // Update user list for room 
+        io.to(user.room).emit('userList', {
+            users: getUsersInRoom(user.room)
+        })
 
-        //update rooms list for everyone
-        io.emit('roomList', { rooms: getAllActiveRooms() })
+        // Update rooms list for everyone 
+        io.emit('roomList', {
+            rooms: getAllActiveRooms()
+        })
     })
 
-    //when user disconnects, send event to all users
+    // When user disconnects - to all others 
     socket.on('disconnect', () => {
         const user = getUser(socket.id)
         userLeavesApp(socket.id)
+
         if (user) {
-            io.to(user.room).emit('message', buildMsg(ADMIN, 
-                `${user.name} has left the room`))
+            io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left the room`))
 
-            //update user list in room
-            io.to(user.room).emit('userList', { users: 
-                getUsersInRoom(user.room) })
+            io.to(user.room).emit('userList', {
+                users: getUsersInRoom(user.room)
+            })
 
-            //update rooms list for everyone
-            io.emit('roomList', { rooms:
-                getAllActiveRooms() })
+            io.emit('roomList', {
+                rooms: getAllActiveRooms()
+            })
         }
+
         console.log(`User ${socket.id} disconnected`)
     })
 
-    //listen for a message event
-    socket.on('message', ({name, text}) => {
-        //optional chaining to get the user value
+    // Listening for a message event 
+    socket.on('message', ({ name, text }) => {
         const room = getUser(socket.id)?.room
         if (room) {
             io.to(room).emit('message', buildMsg(name, text))
         }
     })
 
-    //listen for activity event
-    socket.on('activity', name => {
+    // Listen for activity 
+    socket.on('activity', (name) => {
+        //optional chaining operator to get value of user
         const room = getUser(socket.id)?.room
-        if (room){
+        if (room) {
             socket.broadcast.to(room).emit('activity', name)
         }
     })
@@ -124,24 +126,28 @@ function buildMsg(name, text) {
     }
 }
 
-//User functions
+// User functions 
 function activateUser(id, name, room) {
     const user = { id, name, room }
-    UsersState.setUsers([...usersState.users.filter(user => user.id !== id),
-         user])
+    UsersState.setUsers([
+        ...UsersState.users.filter(user => user.id !== id),
+        user
+    ])
     return user
 }
 
 function userLeavesApp(id) {
-    UsersState.setUsers(usersState.users.filter(user => user.id !== id))
+    UsersState.setUsers(
+        UsersState.users.filter(user => user.id !== id)
+    )
 }
 
 function getUser(id) {
-    return usersState.users.find(user => user.id === id)
+    return UsersState.users.find(user => user.id === id)
 }
 
 function getUsersInRoom(room) {
-    return usersState.users.filter(user => user.room === room)
+    return UsersState.users.filter(user => user.room === room)
 }
 
 function getAllActiveRooms() {
