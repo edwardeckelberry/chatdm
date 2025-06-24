@@ -77,6 +77,14 @@ socket.on('activity', (name) => {
     }, 3000)
 })
 
+socket.on('userList', ({ users}) => {
+    showUsers(users)    
+}) 
+
+socket.on('roomList', ({ rooms }) => {
+    showRooms(rooms)    
+}) 
+
 function showUsers(users) {
     userList.textContent = ""
     if (users) {
