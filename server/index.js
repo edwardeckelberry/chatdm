@@ -105,7 +105,10 @@ io.on('connection', socket => {
 
     //listen for activity event
     socket.on('activity', name => {
-        socket.broadcast.emit('activity', name)
+        const room = getUser(socket.id)?.room
+        if (room){
+            socket.broadcast.to(room).emit('activity', name)
+        }
     })
 })
 
