@@ -43,9 +43,26 @@ msgInput.addEventListener('keypress', () => {
 // Listen for messages 
 socket.on("message", (data) => {
     activity.textContent = ""
+    const { name, text, time } = data
     const li = document.createElement('li')
-    li.textContent = data
-    document.querySelector('ul').appendChild(li)
+    li.className = 'post'
+    if (name === nameInput.value) li.className = 'post post--left'
+    if (name !== nameInput.value && name !== ADMIN) li.className = 'post post--right'
+    if (name !== ADMIN) {
+        //adds header, then shows text, and changes color based on user
+        li.innerHTML = `<div class="post__header ${name === nameInput.value ? 
+            'post__header--user' : 'post__header--reply'}">
+            <span class="post__header--name">${name}</span>
+            <span class="post__header--time">${time}</span>
+            </div>
+            <div class="post__text">${text}</div>`
+    } else {
+        //in case of admin message, no header, just text
+        li.innerHTML = `<div class="post__text">${text}</div>`
+    }
+    document.querySelector('.chat-display').appendChild(li)
+
+    chatDisplay.scrollTop = chatDisplay.scrollHeight
 })
 
 let activityTimer
