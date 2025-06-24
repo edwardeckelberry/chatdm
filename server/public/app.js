@@ -1,3 +1,4 @@
+//make sure to specify the server address and poert
 const socket = io('ws://localhost:3500')
 
 const msgInput = document.querySelector('#message')
