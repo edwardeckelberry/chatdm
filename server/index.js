@@ -67,6 +67,9 @@ io.on('connection', socket => {
 
         //to everyone else in the room
         socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`))
+
+        //update user list in room
+        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) })
     })
     //upon connection, send to all other users
     socket.broadcast.emit('message', 'User has joined')
