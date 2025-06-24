@@ -95,9 +95,12 @@ io.on('connection', socket => {
     })
 
     //listen for a message event
-    socket.on('message', data => {
-        console.log(data)
-        io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
+    socket.on('message', ({name, text}) => {
+        //optional chaining to get the user value
+        const room = getUser(socket.id)?.room
+        if (room) {
+            io.to(room).emit('message', buildMsg(name, text))
+        }
     })
 
     //listen for activity event
