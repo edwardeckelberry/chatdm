@@ -74,8 +74,6 @@ io.on('connection', socket => {
         //update rooms list for everyone
         io.emit('roomsList', { rooms: getAllActiveRooms() })
     })
-    //upon connection, send to all other users
-    socket.broadcast.emit('message', 'User has joined')
 
     //when user disconnects, send event to all users
     socket.on('disconnect', () => {
