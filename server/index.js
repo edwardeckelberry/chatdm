@@ -77,15 +77,15 @@ io.on('connection', socket => {
     //upon connection, send to all other users
     socket.broadcast.emit('message', 'User has joined')
 
+    //when user disconnects, send event to all users
+    socket.on('disconnect', () => {
+        socket.broadcast.emit('message', 'User ' + `${socket.id.substring(0, 5)}` + ' left')
+    })
+
     //listen for a message event
     socket.on('message', data => {
         console.log(data)
         io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
-    })
-
-    //when user disconnects, send event to all users
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('message', 'User ' + `${socket.id.substring(0, 5)}` + ' left')
     })
 
     //listen for activity event
